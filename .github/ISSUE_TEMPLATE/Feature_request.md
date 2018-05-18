@@ -6,15 +6,21 @@ about: I have a suggestion (and may want to implement it 🙂)!
 
 ## Feature Request
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I have an issue when [...]
+**Description of the feature**
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen. Add any considered drawbacks.
+**What problem is this feature solving?**
+<!-- A clear and concise description of why this feature would be beneficial-->
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Describe the desired solution**
+<!-- A clear and concise description of what you want to happen. -->
 
-**Teachability, Documentation, Adoption, Migration Strategy**
-If you can, explain how users will be able to use this and possibly write out a version the docs.
-Maybe a screenshot or design?
+**Prior art**
+<!-- Describe alternatives you've considered, if applicable -->
+
+**Drawbacks**
+<!-- What potential side effects or negative impacts could this feature introduce? -->
+
+**Implementing this feature**
+
+- [ ] I want to build this
+- [ ] I need help to build this
