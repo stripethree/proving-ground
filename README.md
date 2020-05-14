@@ -1,3 +1,3 @@
 # proving-ground
 
-A test repo I can use to try things but do not seem to use much
+A test repo that I do not seem to use much
