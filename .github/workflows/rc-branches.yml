@@ -1,0 +1,14 @@
+name: Release candidate branch maintanence
+
+on:
+  push:
+    branches:
+      - "RC-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]" # RC-YYYY-MM-DD
+
+jobs:
+  publish-gpr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/}
