@@ -17,5 +17,7 @@ jobs:
         run: node dist/index.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get next tag
-        run: echo ${{ steps.get_next_tag.outputs.next_tag }}
+      - run: |
+          git tag ${{ steps.get_next_tag.outputs.next_tag }}
+          git push --tags
+        if: steps.get_next_tag.outputs.next_tag !== ''
