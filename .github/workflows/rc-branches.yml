@@ -6,9 +6,11 @@ on:
       - "RC-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]" # RC-YYYY-MM-DD
 
 jobs:
-  publish-gpr:
+  create-rc-tag:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/}
+      - name: Get last tag
+        run: export LAST_TAG=`git tag -l --sort=-version:refname "${GITHUB_REF##*/}-???" | head -n 1`
+      - name: Increment build
+        run: echo $LAST_TAG
