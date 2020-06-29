@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Get last tag
-        run: export LAST_TAG=`git tag -l --sort=-version:refname "${GITHUB_REF##*/}-???" | head -n 1`
+        run: |
+          export LAST_TAG=`git tag -l --sort=-version:refname "${GITHUB_REF##*/}-???" | head -n 1`
+          echo "::set-env name=LAST_TAG::$LAST_TAG"
       - name: Increment build
         run: echo $LAST_TAG
