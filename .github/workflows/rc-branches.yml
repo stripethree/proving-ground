@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Get last tag
-        id: get_last_tag
-        run: echo "##[set-output name=last_tag;]$(git tag -l --sort=-version:refname "${GITHUB_REF##*/}-???" | head -n 1)"
-      - name: Show last tag
-        run: echo ${{ steps.get_last_tag.outputs.last_tag }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      - id: get_next_tag
+        run: node dist/index.js
+      - name: Get next tag
+        run: echo ${{ steps.get_next_tag.outputs.next_tag }}

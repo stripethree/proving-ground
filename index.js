@@ -1,1 +1,45 @@
-console.log("Hello, world.");
+const core = require("@actions/core");
+const { graphql } = require("@octokit/graphql");
+const { GET_LAST_TAG } = require("./src/queries");
+
+const zeroPad = (num, places) => String(num).padStart(places, "0");
+
+async function getLastTag(token, owner, repoName, queryStr) {
+  return graphql(GET_LAST_TAG, {
+    owner,
+    repoName,
+    queryStr,
+    headers: {
+      authorization: `token ${token}`,
+    },
+  });
+}
+
+if (!process.env.GITHUB_TOKEN) {
+  console.error("Missing GITHUB_TOKEN");
+  return;
+}
+const token = process.env.GITHUB_TOKEN;
+
+if (!process.env.GITHUB_REPOSITORY) {
+  console.error("Missing GITHUB_REPOSITORY");
+  return;
+}
+
+const [owner, repoName] = process.env.GITHUB_REPOSITORY.split("/");
+if (!owner || !repoName) {
+  console.error("Invalid GITHUB_REPOSITORY value");
+  return;
+}
+
+// const clientId = "stripethree/gpr-janitor";
+const branchName = "RC-2020-06-26";
+getLastTag(token, owner, repoName, branchName)
+  .then((data) => {
+    const lastTag = data.repository.refs.nodes[0].name;
+    const lastPatch = parseInt(lastTag.split("-").pop());
+    const nextPatch = lastPatch + 1;
+    const nextTag = branchName.concat("-").concat(zeroPad(nextPatch, 3));
+    console.log(`::set-output name=next_tag::${nextTag}`);
+  })
+  .catch((err) => console.log(err));

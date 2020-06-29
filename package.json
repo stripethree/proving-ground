@@ -11,5 +11,15 @@
     "registry": "https://npm.pkg.github.com/"
   },
   "author": "Jeff Israel <jeff.israel@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "ncc build index.js"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@octokit/graphql": "^4.5.1"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.22.3"
+  }
 }
