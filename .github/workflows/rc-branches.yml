@@ -15,5 +15,7 @@ jobs:
           node-version: "12.x"
       - id: get_next_tag
         run: node dist/index.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get next tag
         run: echo ${{ steps.get_next_tag.outputs.next_tag }}
