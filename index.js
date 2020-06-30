@@ -32,7 +32,6 @@ if (!owner || !repoName) {
   return;
 }
 
-// const clientId = "stripethree/gpr-janitor";
 const branchName = "RC-2020-06-26";
 getLastTag(token, owner, repoName, branchName)
   .then((data) => {
@@ -40,6 +39,7 @@ getLastTag(token, owner, repoName, branchName)
     const lastPatch = parseInt(lastTag.split("-").pop());
     const nextPatch = lastPatch + 1;
     const nextTag = branchName.concat("-").concat(zeroPad(nextPatch, 3));
+    console.log(`::set-output name=last_tag::${lastTag}`);
     console.log(`::set-output name=next_tag::${nextTag}`);
   })
   .catch((err) => console.log(err));

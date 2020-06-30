@@ -10,14 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Extract branch name
+          run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          id: extract_branch
       - uses: actions/setup-node@v1
         with:
           node-version: "12.x"
-      - id: get_next_tag
+      - id: get_tags
         run: node dist/index.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          git tag ${{ steps.get_next_tag.outputs.next_tag }}
-          git push --tags
-        if: steps.get_next_tag.outputs.next_tag != ''
+      - name: Test output
+        run: |
+          echo "Current branch: ${{ steps.extract_branch.outputs.branch }}"
+          echo "Last tag: ${{ steps.get_tags.outputs.last_tag }}"
+          echo "Next tag: ${{ steps.get_tags.outputs.next_tag }}"
+      - name: Testing for changes
+        run: |
+          git diff --name-only ${{ steps.extract_branch.outputs.branch }} ${{ steps.get_tags.outputs.last_tag }} | wc -l
+
+
+#      - run: |
+#          git tag ${{ steps.get_tags.outputs.next_tag }}
+#          git push --tags
+#        if: steps.get_tags.outputs.next_tag != ''
