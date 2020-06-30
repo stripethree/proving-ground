@@ -27,7 +27,7 @@ jobs:
           echo "Next tag: ${{ steps.get_tags.outputs.next_tag }}"
       - name: Testing for changes
         run: |
-          git diff --name-only ${{ steps.extract_branch.outputs.branch }} ${{ steps.get_tags.outputs.last_tag }} | wc -l
+          git diff --name-only ${{ steps.extract_branch.outputs.branch }} refs/tags/${{ steps.get_tags.outputs.last_tag }} | wc -l
 
 #      - run: |
 #          git tag ${{ steps.get_tags.outputs.next_tag }}
