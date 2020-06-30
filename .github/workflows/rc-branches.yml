@@ -9,21 +9,24 @@ jobs:
   create-rc-tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout the repo w/full history
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Extract branch name
+      - name: Extract the current branch name
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - uses: actions/setup-node@v1
+      - name: Setup node 12.x
+        uses: actions/setup-node@v1
         with:
           node-version: "12.x"
-      - id: get_tags
+      - name: Get the last tag and create the label for the next tag
+        id: get_tags
         run: node dist/index.js
         env:
           BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Testing for changes
+      - name: Test for changes against the last tag
         id: changes_since_last_tag
         run: |
           export DIFF_LINES=`git diff --name-only \
@@ -31,16 +34,15 @@ jobs:
             | wc -l \
             | awk '{$1=$1};1'`
           echo "::set-output name=change_lines::${DIFF_LINES}"
-      - name: Test output
+      - name: Provide some debug output
         run: |
           echo "Current branch: ${{ steps.extract_branch.outputs.branch }}"
           echo "Last tag: ${{ steps.get_tags.outputs.last_tag }}"
           echo "Next tag: ${{ steps.get_tags.outputs.next_tag }}"
           echo "Lines changed: ${{ steps.changes_since_last_tag.outputs.change_lines }}"
-      - run: echo "Wasssssup"
+      - name: Create a new tag
+        run: |
+          git tag ${{ steps.get_tags.outputs.next_tag }}
+          git push --tags
         if: steps.changes_since_last_tag.outputs.change_lines != '0' &&
           steps.get_tags.outputs.next_tag != ''
-#      - run: |
-#          git tag ${{ steps.get_tags.outputs.next_tag }}
-#          git push --tags
-#        if: steps.get_tags.outputs.next_tag != ''
