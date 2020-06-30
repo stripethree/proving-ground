@@ -9,6 +9,8 @@ jobs:
   create-rc-tag:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
       - name: Setup node 12.x
         uses: actions/setup-node@v1
         with:
