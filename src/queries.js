@@ -1,14 +1,12 @@
 exports.CREATE_TAG = `
-  mutation($clientId: String!, refName: String!, commitOid: String!, repositoryId: String! ) {
-    createRef(
-      input:{
-        clientMutationId: $clientId,
-        name: $refName,
-        oid: $commitOid,
-        repositoryId: $repositoryId
+  mutation($clientId: String!, $refName: String!, $commitOid: String!, $repositoryId: String! ) {
+    createRef( input:{ clientMutationId: $clientId, name: $refName, oid: $commitOid, repositoryId: $repositoryId } ) {
+      clientMutationId
+      ref {
+        id
+        name
+        prefix
       }
-    ) {
-      success
     }
   }
 `;

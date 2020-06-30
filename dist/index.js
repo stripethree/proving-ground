@@ -471,24 +471,18 @@ getBranchRefs(token, owner, repoName, branchName)
     const lastPatch = parseInt(lastTag.split("-").pop());
     const newTag = branchName.concat("-").concat(zeroPad(lastPatch + 1, 3));
 
-    console.log(`last tag: ${lastTag}`);
-    console.log(`new tag: ${newTag}`);
-
     const branchOid = branchNode.target.oid;
     const lastTagOid = lastTagNode.target.oid;
 
-    const areWeTagging = lastTagOid == null || branchOid !== lastTagOid;
-    console.log(`last tag node oid: ${lastTagNode.target.oid}`);
-    console.log(`branch oid: ${branchNode.target.oid}`);
-    console.log(`are we tagging? ${areWeTagging}`);
-
-    if (!areWeTagging) {
+    if (lastTagOid !== null && branchOid === lastTagOid) {
       throw new Error(
         "No new branch commits. Cowardly refusing to create a new tag."
       );
     }
-    console.log("tag it!");
-    // return createNewTag(token, newTag, branchOid, repositoryId) {
+    return createNewTag(token, newTag, branchOid, repositoryId);
+  })
+  .then((data) => {
+    console.log(JSON.stringify(data, null, "  "));
   })
   .catch((err) => console.log(err));
 
@@ -2397,16 +2391,14 @@ isStream.transform = function (stream) {
 /***/ (function(__unusedmodule, exports) {
 
 exports.CREATE_TAG = `
-  mutation($clientId: String!, refName: String!, commitOid: String!, repositoryId: String! ) {
-    createRef(
-      input:{
-        clientMutationId: $clientId,
-        name: $refName,
-        oid: $commitOid,
-        repositoryId: $repositoryId
+  mutation($clientId: String!, $refName: String!, $commitOid: String!, $repositoryId: String! ) {
+    createRef( input:{ clientMutationId: $clientId, name: $refName, oid: $commitOid, repositoryId: $repositoryId } ) {
+      clientMutationId
+      ref {
+        id
+        name
+        prefix
       }
-    ) {
-      success
     }
   }
 `;
