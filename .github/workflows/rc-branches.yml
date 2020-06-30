@@ -31,9 +31,17 @@ jobs:
           ref: ${{ steps.get_tags.outputs.last_tag }}
           path: ${{ steps.get_tags.outputs.last_tag }}
       - name: Testing for changes
+        id: changes_since_last_tag
         run: |
-          git diff --name-only ${{ steps.extract_branch.outputs.branch }} ${{ steps.get_tags.outputs.last_tag }} | wc -l
-
+          export DIFF_LINES=`git diff --name-only \
+            ${{ steps.extract_branch.outputs.branch }} \
+            ${{ steps.get_tags.outputs.last_tag }} \
+            | wc -l \
+            | awk '{$1=$1};1'`
+          ::set-output name=change_lines::${DIFF_LINES}
+      - run: echo "Wasssssup"
+        if: steps.changes_since_last_tag.outputs.change_lines != '0' &&
+          steps.get_tags.outputs.next_tag != ''
 #      - run: |
 #          git tag ${{ steps.get_tags.outputs.next_tag }}
 #          git push --tags
