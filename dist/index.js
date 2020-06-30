@@ -484,9 +484,8 @@ getBranchRefs(token, owner, repoName, branchName)
   .then((data) => {
     console.log(JSON.stringify(data, null, "  "));
   })
-  .catch((err) => {
-    console.log(err);
-    return 1;
+  .catch((errorMessage) => {
+    core.setFailed(errorMessage);
   });
 
 
