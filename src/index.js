@@ -1,6 +1,6 @@
 const core = require("@actions/core");
 const { graphql } = require("@octokit/graphql");
-const { CREATE_TAG, GET_BRANCH_REFS } = require("./src/queries");
+const { CREATE_TAG, GET_BRANCH_REFS } = require("./queries");
 
 const zeroPad = (num, places) => String(num).padStart(places, "0");
 const CLIENT_ID = `stripethree/proving-ground`;

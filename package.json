@@ -2,7 +2,7 @@
   "name": "@stripethree/proving-ground",
   "version": "0.1.0",
   "description": "A package to test GitHub publishing",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:stripethree/proving-ground.git"
@@ -13,7 +13,8 @@
   "author": "Jeff Israel <jeff.israel@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "ncc build index.js"
+    "build": "ncc build src/index.js",
+    "run-action": "node dist/index.js"
   },
   "dependencies": {
     "@actions/core": "^1.2.4",
