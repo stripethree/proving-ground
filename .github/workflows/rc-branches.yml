@@ -19,17 +19,12 @@ jobs:
       - id: get_tags
         run: node dist/index.js
         env:
+          BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Checkout the last tag for comparison
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ steps.get_tags.outputs.last_tag }}
-          path: ${{ steps.get_tags.outputs.last_tag }}
       - name: Testing for changes
         id: changes_since_last_tag
         run: |
           export DIFF_LINES=`git diff --name-only \
-            ${{ steps.extract_branch.outputs.branch }} \
             ${{ steps.get_tags.outputs.last_tag }} \
             | wc -l \
             | awk '{$1=$1};1'`

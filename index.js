@@ -26,13 +26,23 @@ if (!process.env.GITHUB_REPOSITORY) {
   return;
 }
 
+if (!process.env.BRANCH_NAME) {
+  console.error("Missing BRANCH_NAME");
+  return;
+}
+
 const [owner, repoName] = process.env.GITHUB_REPOSITORY.split("/");
 if (!owner || !repoName) {
   console.error("Invalid GITHUB_REPOSITORY value");
   return;
 }
 
-const branchName = "RC-2020-06-26";
+const branchName = process.env.BRANCH_NAME;
+if (!branchName) {
+  console.error("Invalid BRANCH_NAME value");
+  return;
+}
+
 getLastTag(token, owner, repoName, branchName)
   .then((data) => {
     const lastTag = data.repository.refs.nodes[0].name;
