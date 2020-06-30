@@ -25,6 +25,11 @@ jobs:
           echo "Current branch: ${{ steps.extract_branch.outputs.branch }}"
           echo "Last tag: ${{ steps.get_tags.outputs.last_tag }}"
           echo "Next tag: ${{ steps.get_tags.outputs.next_tag }}"
+      - name: Checkout the last tag for comparison
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.get_tags.outputs.last_tag }}
+          path: ${{ steps.get_tags.outputs.last_tag }}
       - name: Testing for changes
         run: |
           git diff --name-only ${{ steps.extract_branch.outputs.branch }} refs/tags/${{ steps.get_tags.outputs.last_tag }} | wc -l
