@@ -20,11 +20,6 @@ jobs:
         run: node dist/index.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Test output
-        run: |
-          echo "Current branch: ${{ steps.extract_branch.outputs.branch }}"
-          echo "Last tag: ${{ steps.get_tags.outputs.last_tag }}"
-          echo "Next tag: ${{ steps.get_tags.outputs.next_tag }}"
       - name: Checkout the last tag for comparison
         uses: actions/checkout@v2
         with:
@@ -39,6 +34,12 @@ jobs:
             | wc -l \
             | awk '{$1=$1};1'`
           echo "::set-output name=change_lines::${DIFF_LINES}"
+      - name: Test output
+        run: |
+          echo "Current branch: ${{ steps.extract_branch.outputs.branch }}"
+          echo "Last tag: ${{ steps.get_tags.outputs.last_tag }}"
+          echo "Next tag: ${{ steps.get_tags.outputs.next_tag }}"
+          echo "Lines changed: ${{ steps.changes_since_last_tag.outputs.change_lines }}"
       - run: echo "Wasssssup"
         if: steps.changes_since_last_tag.outputs.change_lines != '0' &&
           steps.get_tags.outputs.next_tag != ''
