@@ -392,12 +392,25 @@ module.exports = require("os");
 
 const core = __webpack_require__(470);
 const { graphql } = __webpack_require__(898);
-const { GET_LAST_TAG } = __webpack_require__(343);
+const { CREATE_TAG, GET_BRANCH_REFS } = __webpack_require__(343);
 
 const zeroPad = (num, places) => String(num).padStart(places, "0");
+const CLIENT_ID = `stripethree/proving-ground`;
 
-async function getLastTag(token, owner, repoName, queryStr) {
-  return graphql(GET_LAST_TAG, {
+async function createNewTag(token, tagName, commitOid, repositoryId) {
+  return graphql(CREATE_TAG, {
+    clientId: CLIENT_ID,
+    refName: `refs/tags/${tagName}`,
+    commitOid,
+    repositoryId,
+    headers: {
+      authorization: `token ${token}`,
+    },
+  });
+}
+
+async function getBranchRefs(token, owner, repoName, queryStr) {
+  return graphql(GET_BRANCH_REFS, {
     owner,
     repoName,
     queryStr,
@@ -407,42 +420,75 @@ async function getLastTag(token, owner, repoName, queryStr) {
   });
 }
 
-if (!process.env.GITHUB_TOKEN) {
-  console.error("Missing GITHUB_TOKEN");
+function getBaseTagNode(branchName) {
+  return {
+    name: `tags/${branchName}-000`,
+    target: { oid: null },
+  };
+}
+
+if (!process.env.GITHUB_REF) {
+  console.error("Missing GITHUB_REPOSITORY");
   return;
 }
-const token = process.env.GITHUB_TOKEN;
 
 if (!process.env.GITHUB_REPOSITORY) {
   console.error("Missing GITHUB_REPOSITORY");
   return;
 }
 
-if (!process.env.BRANCH_NAME) {
-  console.error("Missing BRANCH_NAME");
+if (!process.env.GITHUB_TOKEN) {
+  console.error("Missing GITHUB_TOKEN");
   return;
 }
 
+const branchName = process.env.GITHUB_REF.split("/").pop();
 const [owner, repoName] = process.env.GITHUB_REPOSITORY.split("/");
+const token = process.env.GITHUB_TOKEN;
+
 if (!owner || !repoName) {
   console.error("Invalid GITHUB_REPOSITORY value");
   return;
 }
 
-const branchName = process.env.BRANCH_NAME;
-if (!branchName) {
-  console.error("Invalid BRANCH_NAME value");
-  return;
-}
-
-getLastTag(token, owner, repoName, branchName)
+getBranchRefs(token, owner, repoName, branchName)
   .then((data) => {
-    const lastTag = data.repository.refs.nodes[0].name;
+    const repositoryId = data.repository.id;
+    const tagNodes = data.repository.refs.nodes.filter((node) =>
+      node.name.startsWith("tags")
+    );
+    const lastTagNode = tagNodes.pop() || getBaseTagNode(branchName);
+
+    const branchNodes = data.repository.refs.nodes.filter(
+      (node) => node.name === `heads/${branchName}`
+    );
+    const branchNode = branchNodes.pop();
+    if (!branchNode) {
+      throw new Error("No matching branch name found in graphql response.");
+    }
+
+    const lastTag = lastTagNode.name.split("/").pop();
     const lastPatch = parseInt(lastTag.split("-").pop());
-    const nextPatch = lastPatch + 1;
-    const nextTag = branchName.concat("-").concat(zeroPad(nextPatch, 3));
-    console.log(`::set-output name=last_tag::${lastTag}`);
-    console.log(`::set-output name=next_tag::${nextTag}`);
+    const newTag = branchName.concat("-").concat(zeroPad(lastPatch + 1, 3));
+
+    console.log(`last tag: ${lastTag}`);
+    console.log(`new tag: ${newTag}`);
+
+    const branchOid = branchNode.target.oid;
+    const lastTagOid = lastTagNode.target.oid;
+
+    const areWeTagging = lastTagOid == null || branchOid !== lastTagOid;
+    console.log(`last tag node oid: ${lastTagNode.target.oid}`);
+    console.log(`branch oid: ${branchNode.target.oid}`);
+    console.log(`are we tagging? ${areWeTagging}`);
+
+    if (!areWeTagging) {
+      throw new Error(
+        "No new branch commits. Cowardly refusing to create a new tag."
+      );
+    }
+    console.log("tag it!");
+    // return createNewTag(token, newTag, branchOid, repositoryId) {
   })
   .catch((err) => console.log(err));
 
@@ -2350,16 +2396,35 @@ isStream.transform = function (stream) {
 /***/ 343:
 /***/ (function(__unusedmodule, exports) {
 
-exports.GET_LAST_TAG = `
+exports.CREATE_TAG = `
+  mutation($clientId: String!, refName: String!, commitOid: String!, repositoryId: String! ) {
+    createRef(
+      input:{
+        clientMutationId: $clientId,
+        name: $refName,
+        oid: $commitOid,
+        repositoryId: $repositoryId
+      }
+    ) {
+      success
+    }
+  }
+`;
+
+exports.GET_BRANCH_REFS = `
   query($owner: String!, $repoName: String!, $queryStr: String!) {
     repository(name: $repoName owner: $owner) {
-      refs(refPrefix: "refs/tags/" first: 1 query: $queryStr orderBy: { field: TAG_COMMIT_DATE, direction: DESC } ) {
-      nodes {
-        name
+      id
+      refs(refPrefix: "refs/" first: 100 query: $queryStr orderBy: { field: TAG_COMMIT_DATE, direction: ASC } ) {
+        nodes {
+          name
+          target {
+            oid
+          }
+        }
       }
     }
   }
-}
 `;
 
 
