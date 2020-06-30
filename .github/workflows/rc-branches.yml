@@ -38,7 +38,7 @@ jobs:
             ${{ steps.get_tags.outputs.last_tag }} \
             | wc -l \
             | awk '{$1=$1};1'`
-          ::set-output name=change_lines::${DIFF_LINES}
+          echo "::set-output name=change_lines::${DIFF_LINES}"
       - run: echo "Wasssssup"
         if: steps.changes_since_last_tag.outputs.change_lines != '0' &&
           steps.get_tags.outputs.next_tag != ''
