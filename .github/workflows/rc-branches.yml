@@ -9,8 +9,14 @@ jobs:
   release-candidate-tags:
     runs-on: ubuntu-latest
     steps:
-      - name:
-        id: clean-up-old-package-versions
-        uses: stripethree/rc-branch-action@action-artifacts
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout GitHub Action Repo
+        uses: actions/checkout@v2
+        with:
+          repository: kazoohr/rc-branch-action
+          ref: main
+          token: ${{ secrets.GH_PAT }} # stored in GitHub secrets
+          path: .github/actions/rc-branch-action
+      - name: Run My Action
+        uses: ./.github/actions/rc-branch-action
