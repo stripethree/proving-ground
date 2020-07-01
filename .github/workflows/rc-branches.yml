@@ -11,6 +11,6 @@ jobs:
     steps:
       - name:
         id: clean-up-old-package-versions
-        uses: kazoohr/rc-branch-action@action-artifacts
+        uses: stripethree/rc-branch-action@action-artifacts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
