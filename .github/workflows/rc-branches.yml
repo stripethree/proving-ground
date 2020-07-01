@@ -20,3 +20,5 @@ jobs:
           path: .github/actions/rc-branch-action
       - name: Run My Action
         uses: ./.github/actions/rc-branch-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
