@@ -1,0 +1,22 @@
+name: Clean up old package versions
+on:
+  schedule:
+    - cron: "45 4 * * 1" # 4:45 am Central every Monday
+
+  workflow_dispatch:
+
+jobs:
+  package-cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean up old package versions
+        id: clean-up-old-package-versions
+        uses: stripethree/gpr-janitor@v2
+        with:
+          dry-run: true
+          keep-versions: 25
+          min-age-days: 90
+          versions-to-fetch: 50
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
