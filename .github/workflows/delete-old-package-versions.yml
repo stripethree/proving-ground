@@ -16,6 +16,7 @@ jobs:
           dry-run: true
           keep-versions: 25
           min-age-days: 90
+          packages-to-fetch: 1
           versions-to-fetch: 50
 
         env:
