@@ -19,11 +19,14 @@ jobs:
           git config --local user.email "github@kazoohr.com"
           git config --local user.name "KazooHR GitHub Workflows"
       - id: branch-exists
-        run: echo "::set-output name="branch-exists::$(git ls-remote --heads origin RC-${{ steps.todays-date.outputs.date }})"
+        run |
+          if [ -n "$(git ls-remote --heads origin RC-${{ steps.todays-date.outputs.date }})" ]; then
+            echo "::set-output name="branch-exists::1"
+          fi
       - run: |
           git checkout -b RC-${{ steps.todays-date.outputs.date }}
           git push --set-upstream origin \
             RC-${{ steps.todays-date.outputs.date }}
           git tag RC-${{ steps.todays-date.outputs.date }}-001
           git push --tags
-          if: steps.status.outputs.branch-exists == ""          
+          if: steps.status.outputs.branch-exists == '1'
