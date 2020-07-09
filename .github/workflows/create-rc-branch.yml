@@ -21,7 +21,7 @@ jobs:
       - id: branch-exists
         run: |
           if [ -n "$(git ls-remote --heads origin RC-${{ steps.todays-date.outputs.date }})" ]; then
-            echo "::set-output name="branch-exists::1"
+            echo "::set-output name=branch-exists::1"
           fi
       - run: |
           git checkout -b RC-${{ steps.todays-date.outputs.date }}
