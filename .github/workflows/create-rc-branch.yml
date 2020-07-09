@@ -10,23 +10,28 @@ jobs:
   nightly-build:
     runs-on: ubuntu-latest
     steps:
-      - id: get-branch-name
-        run: echo "::set-output name=branch-name::RC-$(date +'%Y-%m-%d')"
-      - uses: actions/checkout@v2
+      - name: Get branch name
+        id: get-branch-name
+        run: echo "::set-output branch-name=RC-$(date +'%Y-%m-%d')"
+      - name: Checkout 'main'
+        uses: actions/checkout@v2
         with:
           ref: "main"
-      - run: |
+      - name: Configure git user name and email
+        run: |
           git config --local user.email "github@kazoohr.com"
           git config --local user.name "KazooHR GitHub Workflows"
-      - id: branch-exists-check
+      - name: Check if RC branch exists
+        id: branch-exists-check
         run: |
-          if [ -n "$(git ls-remote --heads origin {{ steps.get-branch-name.outputs.branch-name }})" ]; then
+          if [ -n "$(git ls-remote --heads origin ${{ steps.get-branch-name.outputs.branch-name }})" ]; then
             echo "::set-output name=branch-exists::1"
           fi
-      - run: |
-          git checkout -b {{ steps.get-branch-name.outputs.branch-name }}
+      - name: Create RC branch
+        run: |
+          git checkout -b ${{ steps.get-branch-name.outputs.branch-name }}
           git push --set-upstream origin \
-            {{ steps.get-branch-name.outputs.branch-name }}
-          git tag {{ steps.get-branch-name.outputs.branch-name }}-001
+            ${{ steps.get-branch-name.outputs.branch-name }}
+          git tag ${{ steps.get-branch-name.outputs.branch-name }}-001
           git push --tags
         if: steps.branch-exists-check.outputs.branch-exists == '1'
