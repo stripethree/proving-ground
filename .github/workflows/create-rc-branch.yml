@@ -19,7 +19,7 @@ jobs:
           git config --local user.email "github@kazoohr.com"
           git config --local user.name "KazooHR GitHub Workflows"
       - id: branch-exists
-        run |
+        run: |
           if [ -n "$(git ls-remote --heads origin RC-${{ steps.todays-date.outputs.date }})" ]; then
             echo "::set-output name="branch-exists::1"
           fi
