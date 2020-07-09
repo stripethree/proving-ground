@@ -10,8 +10,8 @@ jobs:
   nightly-build:
     runs-on: ubuntu-latest
     steps:
-      - id: todays-date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - id: get-branch-name
+        run: echo "::set-output branch-name=RC-$(date +'%Y-%m-%d')"
       - uses: actions/checkout@v2
         with:
           ref: "main"
@@ -20,13 +20,13 @@ jobs:
           git config --local user.name "KazooHR GitHub Workflows"
       - id: branch-exists
         run: |
-          if [ -n "$(git ls-remote --heads origin RC-${{ steps.todays-date.outputs.date }})" ]; then
+          if [ -n "$(git ls-remote --heads origin ${{ steps.get-branch-name.outputs.branch-name }})" ]; then
             echo "::set-output name=branch-exists::1"
           fi
       - run: |
-          git checkout -b RC-${{ steps.todays-date.outputs.date }}
+          git checkout -b ${{ steps.get-branch-name.outputs.branch-name }}
           git push --set-upstream origin \
-            RC-${{ steps.todays-date.outputs.date }}
-          git tag RC-${{ steps.todays-date.outputs.date }}-001
+            ${{ steps.get-branch-name.outputs.branch-name }}
+          git tag ${{ steps.get-branch-name.outputs.branch-name }}-001
           git push --tags
         if: steps.status.outputs.branch-exists == '1'
