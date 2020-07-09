@@ -21,11 +21,11 @@ jobs:
         run: |
           git config --local user.email "github@kazoohr.com"
           git config --local user.name "KazooHR GitHub Workflows"
-      - name: Check if RC branch exists
-        id: branch-exists-check
+      - name: Check if RC branch already exists
+        id: branch-check
         run: |
-          if [ -n "$(git ls-remote --heads origin ${{ steps.get-branch-name.outputs.branch-name }})" ]; then
-            echo "::set-output name=branch-exists::1"
+          if [ -z "$(git ls-remote --heads origin ${{ steps.get-branch-name.outputs.branch-name }})" ]; then
+            echo "::set-output name=create-branch::yes"
           fi
       - name: Create RC branch
         run: |
@@ -34,4 +34,4 @@ jobs:
             ${{ steps.get-branch-name.outputs.branch-name }}
           git tag ${{ steps.get-branch-name.outputs.branch-name }}-001
           git push --tags
-        if: steps.branch-exists-check.outputs.branch-exists == '1'
+        if: steps.branch-check.outputs.create-branch == 'yes'
