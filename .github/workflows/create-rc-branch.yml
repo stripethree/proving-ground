@@ -1,0 +1,29 @@
+name: Create a release candidate branch
+
+on:
+  schedule:
+    - cron: "45 4 * * 5" # Every Friday at 4:45 am Central
+
+  workflow_dispatch:
+
+jobs:
+  nightly-build:
+    runs-on: ubuntu-latest
+    steps:
+      - id: todays-date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - uses: actions/checkout@v2
+        with:
+          ref: "master"
+      - run: |
+          git config --local user.email "github@kazoohr.com"
+          git config --local user.name "KazooHR GitHub Workflows"
+      - id: branch-exists
+        run: echo "::set-output name="branch-exists::$(git ls-remote --heads origin RC-${{ steps.todays-date.outputs.date }})"
+      - run: |
+          git checkout -b RC-${{ steps.todays-date.outputs.date }}
+          git push --set-upstream origin \
+            RC-${{ steps.todays-date.outputs.date }}
+          git tag RC-${{ steps.todays-date.outputs.date }}-001
+          git push --tags
+          if: steps.status.outputs.branch-exists == ""          
