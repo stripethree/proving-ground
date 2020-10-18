@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+// import React, { useState } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Jumbotron from "react-bootstrap/Jumbotron";
+import Row from "react-bootstrap/Row";
+
+import MyNavbar from "./Navbar.js";
+
+import "./App.css";
+
+const WelcomeJumbotron = () => (
+  <Jumbotron>
+    <h1 className="header">Welcome to the proving ground</h1>
+  </Jumbotron>
+);
+
+const App = () => (
+  <Container>
+    <WelcomeJumbotron />
+    <MyNavbar />
+    <Row>
+      <Col>Col 1</Col>
+      <Col>Col 2</Col>
+      <Col>Col 3</Col>
+    </Row>
+  </Container>
+);
 
 export default App;
